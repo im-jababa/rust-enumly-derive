@@ -3,8 +3,38 @@
 use proc_macro::TokenStream;
 use quote::quote;
 use syn::spanned::Spanned;
-use syn::{parse_macro_input, Attribute, Data, DeriveInput, Fields};
+use syn::{Attribute, Data, DeriveInput, Fields, parse_macro_input};
 
+/// Derive macro that exposes compile-time constants for the full set of enum variants.
+///
+/// ---
+/// # Examples
+/// ```ignore
+/// use enumly::Enumly;
+///
+/// #[derive(Enumly, Debug, PartialEq)]
+/// enum Color {
+///     Red,
+///     Green,
+///     Blue,
+/// }
+///
+/// assert_eq!(Color::COUNT, 3);
+/// assert_eq!(Color::VARIANTS, &[Color::Red, Color::Green, Color::Blue]);
+/// ```
+///
+/// ---
+/// Fails to compile when any variant is not unit:
+/// ```compile_fail
+/// use enumly::Enumly;
+///
+/// #[derive(Enumly)]
+/// enum Bad {
+///     Tuple(u8),
+///     Struct { value: u8 },
+/// }
+/// ```
+///
 #[proc_macro_derive(Enumly)]
 pub fn derive_enumly(input: TokenStream) -> TokenStream {
     let input = parse_macro_input!(input as DeriveInput);
@@ -44,7 +74,9 @@ pub fn derive_enumly(input: TokenStream) -> TokenStream {
 
     let name = &input.ident;
     let count = variant_idents.len();
-    let variant_exprs = variant_idents.iter().map(|variant| quote! { Self::#variant });
+    let variant_exprs = variant_idents
+        .iter()
+        .map(|variant| quote! { Self::#variant });
     let (impl_generics, ty_generics, where_clause) = input.generics.split_for_impl();
 
     let expanded = quote! {
@@ -61,8 +93,10 @@ fn non_exhaustive_error(attrs: &[Attribute]) -> Option<syn::Error> {
     attrs
         .iter()
         .find(|attr| attr.path().is_ident("non_exhaustive"))
-        .map(|attr| syn::Error::new(
-            attr.span(),
-            "Enumly does not support #[non_exhaustive] enums or variants",
-        ))
+        .map(|attr| {
+            syn::Error::new(
+                attr.span(),
+                "Enumly does not support #[non_exhaustive] enums or variants",
+            )
+        })
 }

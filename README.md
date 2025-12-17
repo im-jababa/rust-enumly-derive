@@ -1,2 +1,5 @@
-# rust-enumly-derive
-Provides a procedural macro that exposes a compile-time static list of all variants of an enum.
+# enumly-derive
+Internal proc-macro crate for `Enumly`.
+
+This package is not intended for direct use; depend on `enumly` instead:
+[enumly on crates.io](https://crates.io/crates/enumly).
