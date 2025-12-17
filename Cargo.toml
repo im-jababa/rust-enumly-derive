@@ -1,0 +1,15 @@
+[package]
+name = "enumly-derive"
+version = "1.1.0"
+edition = "2024"
+authors = ["Jababa <im@jababa.im>"]
+description = "Provides a procedural macro that exposes a compile-time static list of all variants of an enum."
+licence = "MIT"
+
+[lib]
+proc-macro = true
+
+[dependencies]
+proc-macro2 = "1"
+quote = "1"
+syn = { version = "2", features = ["full"] }
