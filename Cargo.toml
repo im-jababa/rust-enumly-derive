@@ -1,6 +1,6 @@
 [package]
 name = "enumly-derive"
-version = "1.1.0"
+version = "1.1.1"
 edition = "2024"
 authors = ["Jababa <im@jababa.im>"]
 description = "Provides a procedural macro that exposes a compile-time static list of all variants of an enum."
